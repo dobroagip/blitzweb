@@ -1,0 +1,4 @@
+# Placeholder for OG Image
+# Рекомендуемый размер: 1200x630px
+# Формат: JPG или PNG
+# Переименуйте реальное изображение в og-image.jpg

@@ -4,73 +4,14 @@ import { agency, office, KSB, Max, Yuriy } from './src/assets/images.ts';
 import PrivacyPolicyPage from './src/pages/PrivacyPolicyPage';
 import TermsPage from './src/pages/TermsPage';
 import CookiesPolicyPage from './src/pages/CookiesPolicyPage';
+import ServicesPage from './src/pages/ServicesPage';
 import CookieBanner from './src/components/CookieBanner/CookieBanner';
-import CookieAdmin from './src/pages/admin/CookieAdmin';
 import AdminDashboard from './src/pages/admin/AdminDashboard';
+import ProcessSection from './src/components/section/ProcessSection';
+import UTPSection from './src/components/section/UTPSection';
 import { trackPageView, trackEvent } from './src/cookieUtils';
-// --- Types & Configuration ---
-
-type Language = 'en' | 'ua';
-type Page = 'home' | 'services' | 'portfolio' | 'about' | 'contact' | 'privacy' | 'terms' | 'cookies' | 'admin';
-
-interface SeoData {
-  title: string;
-  description: string;
-  keywords: string;
-}
-
-interface TeamMember {
-  name: string;
-  role: string;
-  desc: string;
-  image: string;
-}
-
-interface PageContent {
-  seo: SeoData;
-  hero?: {
-    title: string;
-    subtitle: string;
-    cta: string;
-  };
-  story?: {
-    title: string;
-    p1: string;
-    p2: string;
-  };
-  team?: {
-    title: string;
-    members: TeamMember[];
-  };
-}
-
-interface Translation {
-  nav: Record<Page, string>;
-  common: {
-    changeLang: string;
-    startProject: string;
-    footerText: string;
-    rights: string;
-  };
-  contactForm: {
-    namePlaceholder: string;
-    emailPlaceholder: string;
-    selectService: string;
-    projectPlaceholder: string;
-    serviceOptions: {
-      design: string;
-      development: string;
-      seo: string;
-    };
-  };
-  footerLinks: {
-    services: string[];
-    company: string[];
-    legal: string[];
-  };
-  pages: Record<Page, PageContent>;
-  servicesList?: Array<{ title: string; desc: string; icon: string }>;
-}
+import type { Language, Page, Translation } from './src/types';
+import { SeoManager } from './src/seo/SeoManager';
 
 // --- Content Data (UA/EN) ---
 
@@ -117,6 +58,24 @@ const contentData: Record<Language, Translation> = {
       { title: 'SEO Optimization', desc: 'Ranking your business #1 in Google Search.', icon: '🔍' },
       { title: 'Digital Promotion', desc: 'Comprehensive marketing strategies for EU markets.', icon: '📈' },
     ],
+    utp: {
+      title: 'Why Choose Blitz Web Studio?',
+      subtitle: 'We combine Swiss-inspired design precision with bulletproof engineering',
+      items: [
+        { title: 'Fast Delivery', desc: 'Launch in 2-4 weeks, not months' },
+        { title: 'Performance First', desc: '90+ PageSpeed scores guaranteed' },
+        { title: 'SEO Ready', desc: 'Built for Google from day one' },
+        { title: 'Full Support', desc: '3 months of free maintenance' }
+      ]
+    },
+    process: {
+      title: 'Our Process',
+      steps: [
+        { title: 'Discovery', desc: 'We analyze your business goals and target audience' },
+        { title: 'Design', desc: 'Create stunning, conversion-focused designs' },
+        { title: 'Development', desc: 'Build with modern tech stack for speed and SEO' },
+      ]
+    },
     pages: {
       home: {
         seo: {
@@ -256,6 +215,24 @@ privacy: {
       { title: 'SEO Оптимізація', desc: 'Виведення вашого бізнесу в ТОП Google.', icon: '🔍' },
       { title: 'Просування сайтів', desc: 'Комплексні маркетингові стратегії для ринків ЄС.', icon: '📈' },
     ],
+    utp: {
+      title: 'Чому обирають Blitz Web Studio?',
+      subtitle: 'Поєднуємо швейцарську точність дизайну з надійною інженерією',
+      items: [
+        { title: 'Швидка розробка', desc: 'Запуск за 2-4 тижні, а не місяці' },
+        { title: 'Продуктивність', desc: 'Гарантуємо 90+ балів PageSpeed' },
+        { title: 'SEO-готовність', desc: 'Створено для Google з першого дня' },
+        { title: 'Повна підтримка', desc: '3 місяці безкоштовного обслуговування' }
+      ]
+    },
+    process: {
+      title: 'Наш процес',
+      steps: [
+        { title: 'Аналіз', desc: 'Вивчаємо ваші бізнес-цілі та цільову аудиторію' },
+        { title: 'Дизайн', desc: 'Створюємо приголомшливий дизайн для конверсії' },
+        { title: 'Розробка', desc: 'Будуємо на сучасному стеку для швидкості та SEO' },
+      ]
+    },
     pages: {
       home: {
         seo: {
@@ -373,40 +350,7 @@ export const AppContext = createContext<AppContextType>({
   setPage: () => {},
 });
 
-// --- Dynamic SEO Component ---
-
-const SEOManager = () => {
-  const { lang, page } = useContext(AppContext);
-  const seoData = contentData[lang].pages[page].seo;
-
-  useEffect(() => {
-    // 1. Update Title
-    document.title = seoData.title;
-
-    // 2. Update Description
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.setAttribute('name', 'description');
-      document.head.appendChild(metaDesc);
-    }
-    metaDesc.setAttribute('content', seoData.description);
-
-    // 3. Update Keywords
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      metaKeywords = document.createElement('meta');
-      metaKeywords.setAttribute('name', 'keywords');
-      document.head.appendChild(metaKeywords);
-    }
-    metaKeywords.setAttribute('content', seoData.keywords);
-
-    // 4. Update HTML Lang Attribute
-    document.documentElement.lang = lang;
-  }, [lang, page, seoData]);
-
-  return null;
-};
+// SEOManager импортирован из src/seo/SeoManager.tsx
 
 // --- Icons ---
 
@@ -442,9 +386,15 @@ const NavLink: React.FC<{ target: Page; label: string; current: Page; onClick: (
 
 const Header = () => {
   const { lang, setLang, page, setPage } = useContext(AppContext);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = contentData[lang];
 
   const toggleLang = () => setLang(lang === 'en' ? 'ua' : 'en');
+  
+  const handleNavClick = (targetPage: Page) => {
+    setPage(targetPage);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="fixed w-full top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-sm">
@@ -454,6 +404,7 @@ const Header = () => {
             <Logo />
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {(Object.keys(t.nav) as Page[])
               .filter(key => !['privacy', 'terms', 'cookies'].includes(key))
@@ -468,8 +419,8 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex items-center space-x-6">
-             {/* Language / Theme placeholder toggle */}
+          <div className="flex items-center space-x-4">
+             {/* Language Toggle */}
             <button 
               onClick={toggleLang}
               className="p-2 rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition"
@@ -478,14 +429,63 @@ const Header = () => {
                <span className="text-xs font-bold uppercase w-5 h-5 flex items-center justify-center">{lang}</span>
             </button>
             
+            {/* Desktop CTA */}
             <button 
               onClick={() => setPage('contact')}
-              className="hidden sm:inline-flex items-center justify-center px-6 py-2.5 border border-transparent rounded bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 transition-all text-sm"
+              className="hidden md:inline-flex items-center justify-center px-6 py-2.5 border border-transparent rounded bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 transition-all text-sm"
             >
               {t.common.startProject}
             </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded text-slate-400 hover:text-white transition"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-slate-800 animate-fadeIn">
+            <nav className="flex flex-col space-y-4">
+              {(Object.keys(t.nav) as Page[])
+                .filter(key => !['privacy', 'terms', 'cookies'].includes(key))
+                .map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => handleNavClick(key)}
+                    className={`text-left px-4 py-2 rounded transition-colors ${
+                      page === key 
+                        ? 'text-cyan-400 bg-slate-900' 
+                        : 'text-slate-300 hover:text-white hover:bg-slate-900/50'
+                    }`}
+                  >
+                    {t.nav[key]}
+                  </button>
+                ))}
+              
+              {/* Mobile CTA */}
+              <button 
+                onClick={() => handleNavClick('contact')}
+                className="mx-4 mt-2 px-6 py-3 bg-cyan-400 text-slate-950 font-bold rounded hover:bg-cyan-300 transition text-center"
+              >
+                {t.common.startProject}
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
@@ -494,11 +494,11 @@ const Header = () => {
 const HeroSection = ({ t }: { t: Translation }) => (
   <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-950">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="max-w-3xl">
+      <div className="max-w-3xl text-center mx-auto">
         <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8">
           {t.pages.home.hero?.title}
         </h1>
-        <p className="text-xl md:text-2xl text-slate-400 mb-10 leading-relaxed max-w-2xl">
+        <p className="text-xl md:text-2xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto">
           {t.pages.home.hero?.subtitle}
         </p>
         <div className="flex flex-wrap gap-4">
@@ -529,7 +529,7 @@ const StorySection = ({ t }: { t: Translation }) => {
                          <img src={agency} className="w-full h-full object-cover grayscale" alt="Blitz Studio — creative agency" />
                      </div>
                 </div>
-                <div className="md:w-1/2 flex flex-col justify-center">
+                <div className="md:w-1/2 flex flex-col justify-center text-center">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">{data?.title}</h2>
                     <p className="text-lg text-slate-400 mb-6 leading-relaxed">
                         {data?.p1}
@@ -548,11 +548,11 @@ const TeamSection = ({ t }: { t: Translation }) => {
     return (
         <div className="py-24 bg-slate-900 border-y border-slate-800">
              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl font-bold text-white mb-12">{data?.title}</h2>
+                <h2 className="text-3xl font-bold text-white mb-12 text-center">{data?.title}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {data?.members.map((member, idx) => (
-                        <div key={idx} className="group">
-                            <div className="mb-6 overflow-hidden rounded-lg aspect-[4/5] bg-slate-800 relative">
+                        <div key={idx} className="group text-center">
+                            <div className="mb-6 overflow-hidden rounded-lg aspect-[4/5] bg-slate-800 relative mx-auto max-w-sm">
                                 <img src={member.image} alt={member.name} className="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
                                 <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition"></div>
                             </div>
@@ -567,21 +567,29 @@ const TeamSection = ({ t }: { t: Translation }) => {
     )
 }
 
-const ServicesSection = ({ t }: { t: Translation }) => (
-  <div className="py-24 bg-slate-950">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-         <div>
+const ServicesSection = ({ t }: { t: Translation }) => {
+  const { setPage } = useContext(AppContext);
+  
+  return (
+    <div className="py-24 bg-slate-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center mb-16 text-center">
+          <div className="mb-6">
             <h2 className="text-3xl font-bold text-white sm:text-4xl">{t.nav.services}</h2>
-            <p className="mt-2 text-lg text-slate-400">End-to-end solutions for modern brands.</p>
-         </div>
-         <button className="hidden md:block text-cyan-400 hover:text-white transition font-medium">View all services &rarr;</button>
-      </div>
+            <p className="mt-2 text-lg text-slate-400">Комплексні рішення для сучасних брендів.</p>
+          </div>
+          <button 
+            onClick={() => setPage('services')}
+            className="hidden md:block text-cyan-400 hover:text-white transition font-medium cursor-pointer"
+          >
+            Переглянути всі послуги &rarr;
+          </button>
+        </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 services-content">
         {t.servicesList?.map((service, idx) => (
-          <div key={idx} className="p-8 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition-colors duration-300 border border-slate-800 hover:border-cyan-900 group">
-            <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:text-cyan-400 transition-colors">
+          <div key={idx} className="p-8 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition-colors duration-300 border border-slate-800 hover:border-cyan-900 group text-center">
+            <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-2xl mb-6 group-hover:text-cyan-400 transition-colors mx-auto">
               {service.icon}
             </div>
             <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
@@ -589,87 +597,190 @@ const ServicesSection = ({ t }: { t: Translation }) => (
           </div>
         ))}
       </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-const ContactForm = ({ t }: { t: Translation }) => (
-  <div className="py-24 bg-slate-950">
+const ContactForm = ({ t, lang }: { t: Translation, lang: Language }) => {
+  const [isCareerMode, setIsCareerMode] = React.useState(false);
+  const [fileName, setFileName] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+  React.useEffect(() => {
+    // Проверяем если форма была заполнена карьерным шаблоном
+    const textarea = document.querySelector('#contact-form textarea') as HTMLTextAreaElement;
+    if (textarea && textarea.value.includes('💼')) {
+      setIsCareerMode(true);
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      // Импортируем email сервис динамически
+      const { sendEmail } = await import('./src/api/emailService');
+      
+      const data = {
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        service: formData.get('service') as string,
+        message: formData.get('message') as string,
+        resume: formData.get('resume') as File | null,
+        resumeLink: formData.get('resumeLink') as string,
+        isCareerApplication: isCareerMode
+      };
+
+      const result = await sendEmail(data);
+
+      if (result.success) {
+        setSubmitStatus({ type: 'success', message: result.message });
+        form.reset();
+        setFileName('');
+        setIsCareerMode(false);
+        
+        // Автоматически скрываем сообщение через 5 секунд
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        setSubmitStatus({ 
+          type: 'error', 
+          message: result.message || (lang === 'en' ? 'Error sending message' : 'Помилка відправки повідомлення')
+        });
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      setSubmitStatus({ 
+        type: 'error', 
+        message: lang === 'en' 
+          ? 'Failed to send message. Please try again.' 
+          : 'Не вдалося відправити повідомлення. Спробуйте ще раз.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+  <div id="contact-form" className="py-24 bg-slate-950 scroll-mt-24">
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-white text-center mb-8">{t.nav.contact}</h2>
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input type="text" placeholder={t.contactForm.namePlaceholder} className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition" />
-              <input type="email" placeholder={t.contactForm.emailPlaceholder} className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition" />
+        {submitStatus && (
+          <div className={`mb-6 p-4 rounded-lg border ${
+            submitStatus.type === 'success' 
+              ? 'bg-green-400/10 border-green-400/30 text-green-400' 
+              : 'bg-red-400/10 border-red-400/30 text-red-400'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{submitStatus.type === 'success' ? '✅' : '❌'}</span>
+              <span className="font-medium">{submitStatus.message}</span>
             </div>
-            <select className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-slate-400 focus:border-cyan-400 focus:outline-none transition appearance-none">
-               <option>{t.contactForm.selectService}</option>
-               <option>{t.contactForm.serviceOptions.design}</option>
-               <option>{t.contactForm.serviceOptions.development}</option>
-               <option>{t.contactForm.serviceOptions.seo}</option>
+          </div>
+        )}
+        {isCareerMode && (
+          <div className="mb-6 p-4 bg-cyan-400/10 border border-cyan-400/30 rounded-lg">
+            <div className="flex items-center gap-2 text-cyan-400">
+              <span className="text-2xl">💼</span>
+              <span className="font-semibold">
+                {lang === 'en' ? 'Career Application Form' : 'Форма заявки на вакансію'}
+              </span>
+            </div>
+          </div>
+        )}
+        <h2 className="text-3xl font-bold text-white text-center mb-8">{t.nav.contact}</h2>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input 
+                type="text" 
+                name="name"
+                placeholder={t.contactForm.namePlaceholder} 
+                required
+                className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition" 
+              />
+              <input 
+                type="email" 
+                name="email"
+                placeholder={t.contactForm.emailPlaceholder} 
+                required
+                className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition" 
+              />
+            </div>
+            <select 
+              name="service"
+              required
+              className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-slate-400 focus:border-cyan-400 focus:outline-none transition appearance-none"
+            >
+               <option value="">{t.contactForm.selectService}</option>
+               <option value={t.contactForm.serviceOptions.design}>{t.contactForm.serviceOptions.design}</option>
+               <option value={t.contactForm.serviceOptions.development}>{t.contactForm.serviceOptions.development}</option>
+               <option value={t.contactForm.serviceOptions.seo}>{t.contactForm.serviceOptions.seo}</option>
             </select>
-            <textarea rows={4} placeholder={t.contactForm.projectPlaceholder} className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition"></textarea>
-            <button className="w-full py-4 bg-cyan-400 text-slate-950 font-bold rounded hover:bg-cyan-300 transition shadow-lg shadow-cyan-900/20">
-              {t.common.startProject}
+            <textarea 
+              name="message"
+              rows={4} 
+              placeholder={t.contactForm.projectPlaceholder} 
+              required
+              onChange={(e) => setIsCareerMode(e.target.value.includes('💼'))}
+              className="w-full px-4 py-3 rounded bg-slate-900 border border-slate-800 text-white focus:border-cyan-400 focus:outline-none transition"
+            ></textarea>
+            
+            {isCareerMode && (
+              <div className="space-y-3">
+                <div className="relative">
+                  <label className="block text-sm font-medium text-cyan-400 mb-2">
+                    {lang === 'en' ? '📎 Attach Resume/CV' : '📎 Прикріпити резюме'}
+                  </label>
+                  <input 
+                    type="file" 
+                    id="resume-upload"
+                    name="resume"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => setFileName(e.target.files?.[0]?.name || '')}
+                    className="hidden"
+                  />
+                  <label 
+                    htmlFor="resume-upload"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded bg-slate-900 border-2 border-dashed border-cyan-400/50 text-cyan-400 hover:border-cyan-400 hover:bg-slate-800 cursor-pointer transition"
+                  >
+                    <span>📄</span>
+                    <span>{fileName || (lang === 'en' ? 'Choose file (PDF, DOC, DOCX)' : 'Вибрати файл (PDF, DOC, DOCX)')}</span>
+                  </label>
+                </div>
+                <div className="text-center text-slate-500 text-sm">
+                  {lang === 'en' ? 'or' : 'або'}
+                </div>
+                <input 
+                  type="url" 
+                  name="resumeLink"
+                  placeholder={lang === 'en' ? '🔗 Link to resume (Google Drive, Dropbox, LinkedIn...)' : '🔗 Посилання на резюме (Google Drive, Dropbox, LinkedIn...)'} 
+                  className="w-full px-4 py-3 rounded bg-slate-900 border border-cyan-400/50 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none transition"
+                />
+              </div>
+            )}
+
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-4 bg-cyan-400 text-slate-950 font-bold rounded hover:bg-cyan-300 transition shadow-lg shadow-cyan-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting 
+                ? (lang === 'en' ? '⏳ Sending...' : '⏳ Відправка...') 
+                : (isCareerMode 
+                  ? (lang === 'en' ? '📨 Submit Application' : '📨 Відправити заявку') 
+                  : t.common.startProject)
+              }
             </button>
         </form>
     </div>
   </div>
-);
+  );
+};
 
-// const Footer = () => {
-//   const { lang } = useContext(AppContext);
-//   const t = contentData[lang];
-  
-//   return (
-//     <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-8">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-//             <div className="col-span-1 lg:col-span-1">
-//                <div className="flex items-center gap-2 mb-6">
-//                  <div className="w-6 h-6 bg-cyan-400 rounded flex items-center justify-center">
-//                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-//                  </div>
-//                  <span className="text-lg font-bold text-white">Blitz</span>
-//                </div>
-//                <p className="text-slate-500 text-sm leading-relaxed mb-6">{t.common.footerText}</p>
-//                <div className="flex gap-4">
-//                  {/* Social placeholders */}
-//                  <div className="w-8 h-8 rounded bg-slate-900 hover:bg-slate-800 cursor-pointer flex items-center justify-center text-slate-400 hover:text-white transition">
-//                    <svg fill="currentColor" viewBox="0 0 24 24" className="w-4 h-4"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-//                  </div>
-//                  <div className="w-8 h-8 rounded bg-slate-900 hover:bg-slate-800 cursor-pointer flex items-center justify-center text-slate-400 hover:text-white transition">
-//                    <svg fill="currentColor" viewBox="0 0 24 24" className="w-4 h-4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-//                  </div>
-//                </div>
-//             </div>
-            
-//             <div>
-//                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">Services</h4>
-//                <ul className="space-y-4 text-sm text-slate-400">
-//                   {t.footerLinks.services.map((item, i) => <li key={i}><a href="#" className="hover:text-cyan-400 transition">{item}</a></li>)}
-//                </ul>
-//             </div>
-//             <div>
-//                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">Company</h4>
-//                <ul className="space-y-4 text-sm text-slate-400">
-//                   {t.footerLinks.company.map((item, i) => <li key={i}><a href="#" className="hover:text-cyan-400 transition">{item}</a></li>)}
-//                </ul>
-//             </div>
-//             <div>
-//                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">Legal</h4>
-//                <ul className="space-y-4 text-sm text-slate-400">
-//                   {t.footerLinks.legal.map((item, i) => <li key={i}><a href="#" className="hover:text-cyan-400 transition">{item}</a></li>)}
-//                </ul>
-//             </div>
-//          </div>
-//          <div className="border-t border-slate-900 pt-8 flex justify-between items-center">
-//             <p className="text-slate-600 text-sm">{t.common.rights}</p>
-//          </div>
-//       </div>
-//     </footer>
-//   );
-// };
 const Footer = () => {
   const { lang, setPage, setLang } = useContext(AppContext);
   const t = contentData[lang];
@@ -678,8 +789,8 @@ const Footer = () => {
     <footer id="footer" className="bg-slate-950 border-t border-slate-900 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div className="col-span-1 lg:col-span-1">
-               <div className="flex items-center gap-2 mb-6">
+            <div className="col-span-1 lg:col-span-1 text-center">
+               <div className="flex items-center gap-2 mb-6 justify-center">
                  <div className="w-6 h-6 bg-cyan-400 rounded flex items-center justify-center">
                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-900" viewBox="0 0 24 24" fill="currentColor">
                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
@@ -693,25 +804,50 @@ const Footer = () => {
                </div>
             </div>
             
-            <div>
+            <div className="text-center">
                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">
                  {lang === 'en' ? 'Services' : 'Послуги'}
                </h4>
                <ul className="space-y-4 text-sm text-slate-400">
-                  {t.footerLinks.services.map((item, i) => (
-                    <li key={i}>
-                      <button 
-                        onClick={() => setPage('services')}
-                        className="hover:text-cyan-400 transition text-left w-full"
-                      >
-                        {item}
-                      </button>
-                    </li>
-                  ))}
+                  {t.footerLinks.services.map((item, i) => {
+                    // Маппинг услуг на ID секций
+                    const serviceMap: Record<string, string> = {
+                      'Розробка Shopify': 'e-commerce',
+                      'Shopify Dev': 'e-commerce',
+                      'Веб-дизайн': 'landing-pages',
+                      'Web Design': 'landing-pages',
+                      'SEO Оптимізація': 'seo-optimization',
+                      'SEO Optimization': 'seo-optimization',
+                      'Рішення на Next.js': 'wordpress-headless',
+                      'Next.js Solutions': 'wordpress-headless'
+                    };
+                    
+                    const serviceId = serviceMap[item] || '';
+                    
+                    return (
+                      <li key={i}>
+                        <button 
+                          onClick={() => {
+                            setPage('services');
+                            // Прокрутка через 300мс после перехода
+                            setTimeout(() => {
+                              const element = document.getElementById(serviceId);
+                              if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }
+                            }, 300);
+                          }}
+                          className="hover:text-cyan-400 transition"
+                        >
+                          {item}
+                        </button>
+                      </li>
+                    );
+                  })}
                </ul>
             </div>
             
-            <div>
+            <div className="text-center">
                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">
                  {lang === 'en' ? 'Company' : 'Компанія'}
                </h4>
@@ -720,20 +856,44 @@ const Footer = () => {
                     <li key={i}>
                       <button 
                         onClick={() => {
-                          // Маппинг для ссылок Company
+                          // Особая обработка для Careers
+                          if (item === 'Careers' || item === "Кар'єра") {
+                            setPage('home');
+                            setTimeout(() => {
+                              const form = document.getElementById('contact-form');
+                              if (form) {
+                                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                // Заполняем селект и текстовое поле
+                                setTimeout(() => {
+                                  const textarea = form.querySelector('textarea');
+                                  if (textarea) {
+                                    const careerText = lang === 'en' 
+                                      ? '💼 Career Application\n\nPosition interested in:\nYour experience:\nWhy join Blitz Web Studio:'
+                                      : '💼 Заявка на вакансію\n\nПозиція, яка цікавить:\nВаш досвід:\nЧому Blitz Web Studio:';
+                                    (textarea as HTMLTextAreaElement).value = careerText;
+                                    // Триггерим событие change чтобы активировать режим careers
+                                    const event = new Event('change', { bubbles: true });
+                                    textarea.dispatchEvent(event);
+                                    textarea.focus();
+                                  }
+                                }, 500);
+                              }
+                            }, 300);
+                            return;
+                          }
+                          
+                          // Маппинг для остальных ссылок Company
                           const companyMap: Record<string, Page> = {
                             'About Us': 'about',
                             'Про нас': 'about',
                             'Portfolio': 'portfolio',
                             'Портфоліо': 'portfolio',
                             'Contact': 'contact',
-                            'Контакти': 'contact',
-                            'Careers': 'contact',
-                            'Кар\'єра': 'contact'
+                            'Контакти': 'contact'
                           };
                           setPage(companyMap[item] || 'home');
                         }}
-                        className="hover:text-cyan-400 transition text-left w-full"
+                        className="hover:text-cyan-400 transition"
                       >
                         {item}
                       </button>
@@ -742,7 +902,7 @@ const Footer = () => {
                </ul>
             </div>
             
-            <div>
+            <div className="text-center">
                <h4 className="font-bold text-white mb-6 uppercase text-sm tracking-wider">
                  {lang === 'en' ? 'Legal' : 'Юридична інформація'}
                </h4>
@@ -750,7 +910,7 @@ const Footer = () => {
                   <li>
                     <button 
                       onClick={() => setPage('privacy')}
-                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group w-full text-left"
+                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group justify-center"
                     >
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -761,7 +921,7 @@ const Footer = () => {
                   <li>
                     <button 
                       onClick={() => setPage('terms')}
-                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group w-full text-left"
+                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group justify-center"
                     >
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -772,7 +932,7 @@ const Footer = () => {
                   <li>
                     <button 
                       onClick={() => setPage('cookies')}
-                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group w-full text-left"
+                      className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition group justify-center"
                     >
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -784,9 +944,31 @@ const Footer = () => {
             </div>
          </div>
          
+         {/* Контактний email */}
+         <div className="border-t border-slate-900 pt-8 pb-6">
+            <div className="flex justify-center items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-cyan-400/10 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <p className="text-slate-500 text-xs mb-1">
+                  {lang === 'en' ? 'Contact us' : 'Зв\'яжіться з нами'}
+                </p>
+                <a 
+                  href={`mailto:${(() => localStorage.getItem('site_contact_email') || 'contact@blitzwebstudio.com')()}`}
+                  className="text-cyan-400 hover:text-cyan-300 font-medium text-lg transition"
+                >
+                  {(() => localStorage.getItem('site_contact_email') || 'contact@blitzwebstudio.com')()}
+                </a>
+              </div>
+            </div>
+         </div>
+         
          {/* Нижняя часть футера с копирайтом */}
-         <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-600 text-sm text-center md:text-left">
+         <div className="border-t border-slate-900 pt-8 flex flex-col items-center gap-4">
+            <p className="text-slate-600 text-sm text-center">
               {t.common.rights}
             </p>
             
@@ -839,13 +1021,20 @@ const MainContent = () => {
     return (
       <main>
         <HeroSection t={t} />
+        <UTPSection t={t} />
         <StorySection t={t} />
+        <ProcessSection t={t} />
         <ServicesSection t={t} />
         <TeamSection t={t} />
-        <ContactForm t={t} />
+        <ContactForm t={t} lang={lang} />
       </main>
     );
   }
+  // Страница услуг
+  if (page === 'services') {
+    return <ServicesPage lang={lang} onContactClick={() => setPage('home')} />;
+  }
+  
   // Юридические страницы
   if (page === 'privacy') {
     return <PrivacyPolicyPage />;
@@ -860,27 +1049,7 @@ const MainContent = () => {
   }
   // Админ-панель
   if (page === 'admin') {
-    // Проверяем аутентификацию
-    // const isAuthenticated = localStorage.getItem('admin_authenticated') === 'true';
-    
-    // if (!isAuthenticated && page === 'admin') {
-    //   return (
-    //     <div className="min-h-screen bg-slate-950 pt-32 pb-20">
-    //       <div className="max-w-md mx-auto text-center">
-    //         <h1 className="text-3xl font-bold text-white mb-6">Admin Access Required</h1>
-    //         <button
-    //           onClick={() => setPage('home')}
-    //           className="px-6 py-3 bg-cyan-400 text-slate-900 rounded font-bold"
-    //         >
-    //           Go to Home
-    //         </button>
-    //       </div>
-    //     </div>
-    //   );
-    // }
-    
-    // return <CookieAdmin />;
-     return <AdminDashboard />;
+    return <AdminDashboard />;
   }
 
   return (
@@ -889,14 +1058,14 @@ const MainContent = () => {
          <h1 className="text-4xl font-bold text-white mb-6">{contentData[lang].pages[page].seo.title}</h1>
          <p className="text-slate-400 max-w-2xl mx-auto">{contentData[lang].pages[page].seo.description}</p>
          
-         {page === 'services' && <div className="mt-12"><ServicesSection t={t} /></div>}
+
          {page === 'about' && (
              <div className="mt-12">
                  <StorySection t={t} />
                  <TeamSection t={t} />
              </div>
          )}
-         {page === 'contact' && <div className="-mt-12"><ContactForm t={t} /></div>}
+         {page === 'contact' && <div className="-mt-12"><ContactForm t={t} lang={lang} /></div>}
       </div>
     </main>
   );
@@ -946,7 +1115,11 @@ const App = () => {
   
   return (
     <AppContext.Provider value={{ lang, setLang, page, setPage }}>
-      <SEOManager />
+      <SeoManager 
+        lang={lang} 
+        page={page} 
+        seoData={contentData[lang].pages[page].seo} 
+      />
       {!isLegalPage && <Header />}
       <MainContent />
       {!isLegalPage && <Footer />}

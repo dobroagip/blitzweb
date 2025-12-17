@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Home Page -->
+  <url>
+    <loc>https://blitzwebstudio.com/</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blitzwebstudio.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://blitzwebstudio.com/?lang=ua"/>
+  </url>
+  
+  <!-- Services Page -->
+  <url>
+    <loc>https://blitzwebstudio.com/services</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blitzwebstudio.com/services?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://blitzwebstudio.com/services?lang=ua"/>
+  </url>
+  
+  <!-- Portfolio Page -->
+  <url>
+    <loc>https://blitzwebstudio.com/portfolio</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blitzwebstudio.com/portfolio?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://blitzwebstudio.com/portfolio?lang=ua"/>
+  </url>
+  
+  <!-- About Page -->
+  <url>
+    <loc>https://blitzwebstudio.com/about</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blitzwebstudio.com/about?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://blitzwebstudio.com/about?lang=ua"/>
+  </url>
+  
+  <!-- Contact Page -->
+  <url>
+    <loc>https://blitzwebstudio.com/contact</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blitzwebstudio.com/contact?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://blitzwebstudio.com/contact?lang=ua"/>
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://blitzwebstudio.com/privacy</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Terms & Conditions -->
+  <url>
+    <loc>https://blitzwebstudio.com/terms</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Cookie Policy -->
+  <url>
+    <loc>https://blitzwebstudio.com/cookies</loc>
+    <lastmod>2025-12-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+</urlset>

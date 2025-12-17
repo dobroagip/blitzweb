@@ -1,9 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../index';
 import { saveCookiePreferences, loadCookiePreferences } from '../../src/cookieUtils';
+import { getPrivacyEmail } from '../utils/emailConfig';
 
 const CookiesPolicyPage: React.FC = () => {
   const { lang, setPage } = useContext(AppContext);
+  
+  // Отримуємо privacy email з localStorage
+  const privacyEmail = getPrivacyEmail();
 
   // Загрузка текущих настроек cookies
   const [preferences, setPreferences] = useState(() => loadCookiePreferences());
@@ -409,7 +413,12 @@ const CookiesPolicyPage: React.FC = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold">privacy@blitzwebstudio.com</p>
+                <a 
+                  href={`mailto:${privacyEmail}`}
+                  className="text-white font-semibold hover:text-cyan-400 transition"
+                >
+                  {privacyEmail}
+                </a>
                 <p className="text-slate-400 text-sm">
                   {lang === 'en' ? 'GDPR inquiries' : 'Запити щодо GDPR'}
                 </p>

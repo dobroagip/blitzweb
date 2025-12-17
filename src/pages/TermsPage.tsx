@@ -1,8 +1,12 @@
 import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../../index';
+import { getContactEmail } from '../utils/emailConfig';
 
 const TermsPage: React.FC = () => {
   const { lang, setPage } = useContext(AppContext);
+  
+  // Отримуємо legal/contact email з localStorage
+  const legalEmail = getContactEmail();
 
   // Scroll to top при открытии страницы
   useEffect(() => {
@@ -184,7 +188,12 @@ const TermsPage: React.FC = () => {
               </svg>
             </div>
             <div>
-              <p className="text-white font-semibold">legal@blitzwebstudio.com</p>
+              <a 
+                href={`mailto:${legalEmail}`}
+                className="text-white font-semibold hover:text-cyan-400 transition"
+              >
+                {legalEmail}
+              </a>
               <p className="text-slate-400 text-sm">
                 {lang === 'en' ? 'Response within 48 hours' : 'Відповідь протягом 48 годин'}
               </p>

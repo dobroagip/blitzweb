@@ -1,9 +1,13 @@
 import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../../index';
+import { getPrivacyEmail } from '../utils/emailConfig';
 import './PrivacyPolicyPage.css';
 
 const PrivacyPolicyPage = () => {
   const { lang, setPage } = useContext(AppContext);
+  
+  // Отримуємо email з localStorage або використовуємо за замовчуванням
+  const privacyEmail = getPrivacyEmail();
 
   // Scroll to top при открытии страницы
   useEffect(() => {
@@ -51,7 +55,7 @@ const PrivacyPolicyPage = () => {
         {
           title: '5. Contact Us',
           content: [
-            'Email: privacy@blitzwebstudio.com',
+            `Email: ${privacyEmail}`,
             'For any privacy-related questions',
           ]
         }
@@ -97,7 +101,7 @@ const PrivacyPolicyPage = () => {
         {
           title: '5. Контакти',
           content: [
-            'Email: privacy@blitzwebstudio.com',
+            `Email: ${privacyEmail}`,
             'Для питань щодо конфіденційності',
           ]
         }
@@ -129,12 +133,34 @@ const PrivacyPolicyPage = () => {
                 {section.title}
               </h2>
               <ul className="space-y-4">
-                {section.content.map((item, idx) => (
-                  <li key={idx} className="text-slate-400 flex items-start">
-                    <span className="text-cyan-400 mr-3">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
+                {section.content.map((item, idx) => {
+                  // Проверяем есть ли email в тексте
+                  const emailMatch = item.match(/Email:\s*([^\s]+@[^\s]+)/);
+                  
+                  if (emailMatch) {
+                    const email = emailMatch[1];
+                    return (
+                      <li key={idx} className="text-slate-400 flex items-start">
+                        <span className="text-cyan-400 mr-3">•</span>
+                        <span>
+                          Email: <a 
+                            href={`mailto:${email}`} 
+                            className="text-cyan-400 hover:text-cyan-300 underline transition"
+                          >
+                            {email}
+                          </a>
+                        </span>
+                      </li>
+                    );
+                  }
+                  
+                  return (
+                    <li key={idx} className="text-slate-400 flex items-start">
+                      <span className="text-cyan-400 mr-3">•</span>
+                      <span>{item}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -157,7 +183,12 @@ const PrivacyPolicyPage = () => {
               </svg>
             </div>
             <div>
-              <p className="text-white font-semibold">privacy@blitzwebstudio.com</p>
+              <a 
+                href={`mailto:${privacyEmail}`}
+                className="text-white font-semibold hover:text-cyan-400 transition"
+              >
+                {privacyEmail}
+              </a>
               <p className="text-slate-400 text-sm">
                 {lang === 'en' ? 'We respond within 24 hours' : 'Відповідаємо протягом 24 годин'}
               </p>
